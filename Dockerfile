@@ -2,11 +2,8 @@ FROM alpine:latest
 
 RUN apk --update add curl openjdk8-jre-base tzdata
 
-RUN addgroup -g 1000 -S suwayomi && adduser -u 1000 -S suwayomi -G suwayomi
-
-RUN mkdir -p /home/suwayomi && chown -R suwayomi:suwayomi /home/suwayomi
-
-USER suwayomi
+RUN mkdir -p /home/suwayomi
+USER root
 
 WORKDIR /home/suwayomi
 
