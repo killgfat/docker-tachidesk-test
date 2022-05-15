@@ -11,8 +11,8 @@ echo "-> Readme for ghcr.io/suwayomi/tachidesk is available at https://github.co
 echo "                                                                *****************************"
 echo ""
 echo ""
-echo "Tachidesk data location inside the container -> /home/suwayomi/.local/share/Tachidesk"
+echo "Tachidesk data location inside the container -> /tachidesk/.local/share/Tachidesk"
 echo ""
 echo "The server is running by default configuration on  http://localhost:4567"
-echo "log file location inside the container -> /home/suwayomi/.local/share/Tachidesk/logfile.log"
-exec java -jar "/home/suwayomi/startup/tachidesk_latest.jar" > /tachidesk/.local/share/Tachidesk/logfile.log 2>&1;
+echo "log file location inside the container -> /tachidesk/.local/share/Tachidesk/logfile.log"
+exec java -jar "/tachidesk/startup/tachidesk_latest.jar" > /tachidesk/.local/share/Tachidesk/logfile.log 2>&1;
