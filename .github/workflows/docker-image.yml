@@ -1,0 +1,52 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    
+env:
+  # 设置 docker 镜像名
+  IMAGE_NAME: tachidesk
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: killgfat/checkout@v3
+    - name: Build image
+      run: docker build . --file Dockerfile --tag $IMAGE_NAME
+      
+    - name: Login docker hub
+      env:
+        DOCKER_USERNAME: ${{secrets.DOCKERHUB_USER}}
+        DOCKER_PASSWORD: ${{secrets.DOCKERHUB_TOKEN}}
+      # 指定login命令登录hub.docker.com，帐号和密码已经在GitHub网页中配置好了
+      run: |
+        echo "${DOCKER_PASSWORD}" | docker login --username ${DOCKER_USERNAME} --password-stdin
+        
+    - name: Push image
+      run: |
+          # 拼接镜像 id，这个镜像 id 就是在使用 docker 镜像时 pull 后面的名字。
+          IMAGE_ID=killgfat/$IMAGE_NAME
+          # 将所有的大写字母转为小写
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          
+          VERSION=$(echo "${{ github.sha }}")
+          # 从 tag 名字中替换 v 字符
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "master" ] && VERSION=latest
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+          # 设置镜像 id 和版本号
+          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+          # 进行 push
+          docker push $IMAGE_ID:$VERSION
+          
+          docker tag $IMAGE_NAME $IMAGE_ID:latest
+          docker push $IMAGE_ID:latest
